@@ -8,7 +8,7 @@ public class EnemyTerminator : EnemyController
     public Transform target;
     public float detectionRadius;
     public LayerMask targetsMask;
-    public Weapon terminatorWeapon;
+    public WeaponContainer terminatorWeapon;
     public GameObject deathParticles;
     RaycastHit[] raycastInfos;
     bool targetDetected;
@@ -22,20 +22,7 @@ public class EnemyTerminator : EnemyController
 
         if (!targetDetected)
         {
-            //raycastInfos = Physics.SphereCastAll(transform.position, detectionRadius, Vector3.up, 0.01f, targetsMask);
-            detectedColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius, targetsMask);
-            if (detectedColliders != null)
-            {
-
-                for (int i = 0; i < detectedColliders.Length; i++)
-                {
-
-                    targetDetected = true;
-                    this.target = detectedColliders[i].transform;
-
-                    break;
-                }
-            }
+            TryDetectPlayer();
         }
 
         if (targetDetected)
@@ -67,6 +54,25 @@ public class EnemyTerminator : EnemyController
         //        TargetLost();
         //    }
         //}
+    }
+
+    private void TryDetectPlayer()
+    {
+        //raycastInfos = Physics.SphereCastAll(transform.position, detectionRadius, Vector3.up, 0.01f, targetsMask);
+
+        detectedColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius, targetsMask);
+        if (detectedColliders != null)
+        {
+
+            for (int i = 0; i < detectedColliders.Length; i++)
+            {
+
+                targetDetected = true;
+                this.target = detectedColliders[i].transform;
+
+                break;
+            }
+        }
     }
 
     public void TargetLost()

@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour
     float horizontalMove;
     float verticalMove;
     Vector2 totalMove;
-    
+
     [SerializeField]
-    CharacterAnimationController characterAnimationController;
+    AvatarAnimationController characterAnimationController;
 
     public float playerSpeed = 0.4f;
     public bool playerControlsEnabled;
@@ -26,9 +26,9 @@ public class PlayerController : MonoBehaviour
     Vector2 mousePos;
 
     [Header("Weapons")]
-    public WeaponInventory weaponInventory;
-    Weapon currentWeapon;
-    WeaponType currentWeaponType;
+    public WeaponInventorySO weaponInventory;
+    public WeaponContainer currentWeapon;
+
     int weaponIndex = 0;
 
     private void Start()
@@ -54,12 +54,12 @@ public class PlayerController : MonoBehaviour
     {
         horizontalMove = Input.GetAxis("Horizontal");
         verticalMove = Input.GetAxis("Vertical");
-       
+
         mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         if (horizontalMove + verticalMove != 0)
-            characterAnimationController.Walk();
+            characterAnimationController.SetState<Walking>();
         else
-            characterAnimationController.Idle();
+            characterAnimationController.SetState<Idle>();
     }
 
     public void ControlPartner()
@@ -72,56 +72,62 @@ public class PlayerController : MonoBehaviour
 
     public void ChooseWeapon()
     {
-        Weapon previousWeapon = currentWeapon;
-        WeaponType previousWeaponType = currentWeaponType;
+        WeaponContainer previousWeapon = currentWeapon;
+        int previousWeaponIndex = weaponIndex;
+        SelectWeaponThroughMouse();
+        SelectWeaponThroughKeyboard();
 
+        //ACTUAL WEAPON CHANGE
+        if (weaponIndex != previousWeaponIndex)
+        {
+            currentWeapon.weaponConfiguration = weaponInventory.GetWeaponByIndex(weaponIndex);
+            characterAnimationController.SetWeaponType(currentWeapon.weaponConfiguration);
+
+            partnerManager.SetPartnerWeaponByIndex(weaponIndex);
+
+            if (previousWeapon != null)
+                previousWeapon.SetWeaponShooting(false);
+        }
+
+
+    }
+
+    private void SelectWeaponThroughKeyboard()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            weaponIndex = 0;
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            weaponIndex = 1;
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            weaponIndex = 2;
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            weaponIndex = 3;
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            weaponIndex = 4;
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+            weaponIndex = 5;
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+            weaponIndex = 6;
+    }
+
+    private void SelectWeaponThroughMouse()
+    {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
         {
-            if(weaponIndex < (int)WeaponType.TOTAL_STATES)
+            if (weaponIndex < weaponInventory.weaponConfigurations.Count)
             {
                 weaponIndex += 1;
-                currentWeaponType = (WeaponType)weaponIndex;
             }
-            
+
         }
         if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
         {
-            if(weaponIndex > 0)
+            if (weaponIndex > 0)
             {
                 weaponIndex -= 1;
-                currentWeaponType = (WeaponType)weaponIndex;
             }
-           
+
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            currentWeaponType = WeaponType.UNARMED;
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            currentWeaponType = WeaponType.MACHINE_GUN;
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-            currentWeaponType = WeaponType.MINIGUN;
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-            currentWeaponType = WeaponType.PISTOL;
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-            currentWeaponType = WeaponType.DUAL_PISTOL;
-        if (Input.GetKeyDown(KeyCode.Alpha6))
-            currentWeaponType = WeaponType.LASER1;
-        if (Input.GetKeyDown(KeyCode.Alpha7))
-            currentWeaponType = WeaponType.LASER2;
-
-        //ACTUAL WEAPON CHANGE
-        if (currentWeaponType != previousWeaponType)
-        {
-            characterAnimationController.SetWeaponType(currentWeaponType);
-            currentWeapon = weaponInventory.GetWeapon(currentWeaponType);
-
-            partnerManager.SetPartnerWeapon(currentWeaponType);
-
-            if (previousWeapon != null)
-                previousWeapon.SetWeaponShooting(false);                
-        }
-           
-            
     }
 
     public void ShootWeapon()
@@ -133,7 +139,7 @@ public class PlayerController : MonoBehaviour
             else
                 currentWeapon.SetWeaponShooting(false);
         }
-            
+
     }
 
     private void FixedUpdate()
@@ -149,7 +155,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Bullet")
+        if (collision.gameObject.tag == "Bullet")
         {
             GameManager.instance.ReloadScene();
         }

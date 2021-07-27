@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class WeaponContainer : MonoBehaviour
 {
-    public GameObject bulletPrefab;
-    public float shootingCooldown;
+
     public Transform spawningPosition;
-    public float bulletForce;
+    public WeaponConfigurationSO weaponConfiguration;
 
     [SerializeField]
     protected bool shooting;
@@ -18,7 +17,7 @@ public class Weapon : MonoBehaviour
     {
         if(shooting)
         {
-            if(shootingCounter > shootingCooldown)
+            if(shootingCounter > weaponConfiguration.shootingCooldown)
             {
                 shootingCounter = 0;
                 SpawnBullet();
@@ -30,8 +29,8 @@ public class Weapon : MonoBehaviour
     protected virtual void SpawnBullet()
     {
         
-        GameObject newBullet = Instantiate(bulletPrefab, spawningPosition.transform.position, spawningPosition.rotation, null);
-        Vector3 totalBulletForce = newBullet.transform.up * bulletForce;
+        GameObject newBullet = Instantiate(weaponConfiguration.bulletPrefab, spawningPosition.transform.position, spawningPosition.rotation, null);
+        Vector3 totalBulletForce = newBullet.transform.up * weaponConfiguration.bulletForce;
         
         newBullet.GetComponent<Rigidbody2D>().AddForce(totalBulletForce, ForceMode2D.Impulse);
     }

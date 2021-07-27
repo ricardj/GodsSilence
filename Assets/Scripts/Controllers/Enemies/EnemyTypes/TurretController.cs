@@ -8,7 +8,7 @@ public class TurretController : EnemyController
     public Transform target;
     public float detectionRadius;
     public LayerMask targetsMask;
-    public Weapon turretWeapon;
+    public WeaponContainer turretWeapon;
     public GameObject deathParticles;
     RaycastHit[] raycastInfos;
     bool targetDetected;

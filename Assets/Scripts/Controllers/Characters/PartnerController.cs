@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class PartnerController : MonoBehaviour
 {
-    public CharacterAnimationController characterAnimationController;
+    public AvatarAnimationController characterAnimationController;
     public bool followTarget;
     public GameObject target;
     public float targetPositionOffset;
@@ -15,8 +15,8 @@ public class PartnerController : MonoBehaviour
     Rigidbody2D rb;
 
     [Header("Weapons")]
-    Weapon currentWeapon;
-    WeaponType currentWeaponType;
+    WeaponContainer currentWeapon;
+
     public WeaponInventory weaponInventory;
 
     private void Start()
@@ -45,18 +45,26 @@ public class PartnerController : MonoBehaviour
         }
        
         if (navMeshAgent.velocity.magnitude > 0)
-            characterAnimationController.Walk();
+            characterAnimationController.SetState<Walking>();
         else
-            characterAnimationController.Idle();
+            characterAnimationController.SetState<Idle>();
 
     }
 
-    public void SetWeapon(WeaponType weaponType)
+    public void SetWeaponByIndex(int weaponIndex)
     {
         if(currentWeapon != null)
             currentWeapon.SetWeaponShooting(false);
-        currentWeapon = weaponInventory.GetWeapon(weaponType);
-        characterAnimationController.SetWeaponType(weaponType);
+        currentWeapon = weaponInventory.GetWeapon(weaponIndex);
+        characterAnimationController.SetWeaponType(currentWeapon.weaponConfiguration);
+    }
+
+    public void SetWeapon(WeaponConfigurationSO weaponConfiguration)
+    {
+        if (currentWeapon != null)
+            currentWeapon.SetWeaponShooting(false);
+        currentWeapon.weaponConfiguration = weaponConfiguration;
+        characterAnimationController.SetWeaponType(currentWeapon.weaponConfiguration);
     }
 
     public void OnCollisionEnter2D(Collision2D collision)

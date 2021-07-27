@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponMinigun : Weapon
+public class WeaponContainerMinigun : WeaponContainer
 {
     public Transform[] extraSpawners;
 
@@ -16,8 +16,8 @@ public class WeaponMinigun : Weapon
             currentSpawningPosition = extraSpawners[spawningIndex-1];
 
 
-        GameObject newBullet = Instantiate(bulletPrefab, currentSpawningPosition.position, currentSpawningPosition.rotation, null);
-        Vector3 totalBulletForce = newBullet.transform.up * bulletForce;
+        GameObject newBullet = Instantiate(weaponConfiguration.bulletPrefab, currentSpawningPosition.position, currentSpawningPosition.rotation, null);
+        Vector3 totalBulletForce = newBullet.transform.up * weaponConfiguration.bulletForce;
         newBullet.GetComponent<Rigidbody2D>().AddForce(totalBulletForce, ForceMode2D.Impulse);
 
         spawningIndex++;

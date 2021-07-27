@@ -229,9 +229,13 @@ public class PartnerModeManager : MonoBehaviour
 
 
     #region direct_commands
-    public void SetPartnerWeapon(WeaponType currentWeapon)
+    public void SetPartnerWeapon(WeaponConfigurationSO weaponConfiguration)
     {
-        partnerController.SetWeapon(currentWeapon);
+        partnerController.SetWeapon(weaponConfiguration);
+    }
+    public void SetPartnerWeaponByIndex(int index)
+    {
+        partnerController.SetWeaponByIndex(index);
     }
     public void FollowTarget(GameObject followTarget)
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponPistol : Weapon
+public class WeaponContainerPistol : WeaponContainer
 {
 
     bool shootLocker;
@@ -11,7 +11,7 @@ public class WeaponPistol : Weapon
     {
         if (shooting)
         {
-            if (shootingCounter > shootingCooldown)
+            if (shootingCounter > weaponConfiguration.shootingCooldown)
             {
                 shootingCounter = 0;
                 SpawnBullet();
